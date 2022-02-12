@@ -19,8 +19,11 @@ Route::get('/', function () {
 
 Route::get('/login', function () {
     return view('auth.login');
-});
+})->name('auth.login');
 
-Route::get('/dashboard', function () {
-    return view('dashboard.index');
-});
+Route::post('/login-post', 'DashboardController@postLogin')->name('auth.login.post');
+
+Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+Route::post('/booking-post', 'DashboardController@bookingPost')->name('booking.post');
+Route::post('/booking-put/{booking_id}', 'DashboardController@bookingPut')->name('booking.put');
+Route::get('/booking-del/{booking_id}', 'DashboardController@bookingDelete')->name('booking.delete');
