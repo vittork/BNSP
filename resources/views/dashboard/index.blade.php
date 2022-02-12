@@ -276,6 +276,13 @@ $(document).ready(function(){
 		<div class="table-wrapper">
 			<div class="table-title">
 				<div class="row">
+					<div class="col-sm-12">
+						@if(session('error'))
+							<div class="alert alert-danger" role="alert">
+								{{session('error')}}
+							</div>
+						@endif	
+					</div>
 					<div class="col-sm-6">
 						<h2>My <b>Bookings</b></h2>
 					</div>
