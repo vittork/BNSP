@@ -23,6 +23,5 @@ Route::get('/login', function () {
 
 Route::post('/login-post', 'DashboardController@postLogin')->name('auth.login.post');
 
-Route::get('/dashboard', function () {
-    return view('dashboard.index');
-})->name('dashboard');
+Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+Route::post('/booking-post', 'DashboardController@bookingPost')->name('booking.post');

@@ -300,39 +300,30 @@ $(document).ready(function(){
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>Thomas Hardy</td>
-						<td>thomashardy@mail.com</td>
-						<td>89 Chiaroscuro Rd, Portland, USA</td>
-						<td>
-							<td><img class="imageKamar" src=""></td>
-							<td>Deluxe</td>
-						</td>
-						<td>(171) 555-2222</td>
-						<td>(171) 555-2222</td>
-						<td>(171) 555-2222</td>
-						<td>(171) 555-2222</td>
-						<td>(171) 555-2222</td>
-						<td>
-							<a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-							<a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
-							<a href="#viewEmployeeModal" class="View" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="View details">&#xe8f4;</i></a>
-						</td>
-					</tr>
+					@foreach($bookings as $booking)
+						@php
+							$user	= App\User::find($booking->user_id);
+							$product = App\Product::find($booking->product_id);
+						@endphp
+						<tr>
+							<td>{{$booking->name}}</td>
+							<td>{{$booking->gender}}</td>
+							<td>{{$booking->gender}}</td>
+							<td>{{$product->name}}</td>
+							<td>{{$product->harga}}</td>
+							<td>{{$booking->date}}</td>
+							<td>{{$booking->duration}}</td>
+							<td>{{$booking->breakfast ? 'yes' : 'no'}}</td>
+							<td>{{$booking->total}}</td>
+							<td>
+								<a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+								<a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+								<a href="#viewEmployeeModal" class="View" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="View details">&#xe8f4;</i></a>
+							</td>
+						</tr>
+					@endforeach
 				</tbody>
 			</table>
-			<!-- <div class="clearfix">
-				<div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
-				<ul class="pagination">
-					<li class="page-item disabled"><a href="#">Previous</a></li>
-					<li class="page-item"><a href="#" class="page-link">1</a></li>
-					<li class="page-item"><a href="#" class="page-link">2</a></li>
-					<li class="page-item active"><a href="#" class="page-link">3</a></li>
-					<li class="page-item"><a href="#" class="page-link">4</a></li>
-					<li class="page-item"><a href="#" class="page-link">5</a></li>
-					<li class="page-item"><a href="#" class="page-link">Next</a></li>
-				</ul>
-			</div> -->
 		</div>
 	</div>        
 </div>
@@ -340,47 +331,62 @@ $(document).ready(function(){
 <div id="addEmployeeModal" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form>
-				<div class="modal-header">						
+			<form action="{{route('booking.post')}}" method="post">
+				@csrf
+				<div class="modal-header">
 					<h4 class="modal-title">Pesan Kamar</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				</div>
 				<div class="modal-body">					
 					<div class="form-group">
 						<label>Nama</label>
-						<input type="text" class="form-control" required>
+						<input type="text" class="form-control" required name="name">
 					</div>
 					<div class="form-group">
 						<label>Jenis Kelamin</label>
-						<input type="email" class="form-control" required>
+						<div>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="radio" name="gender" id="inlineRadio1" value="Laki-laki">
+								<label class="form-check-label" for="inlineRadio1">Laki-laki</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="radio" name="gender" id="inlineRadio2" value="Perempuan">
+								<label class="form-check-label" for="inlineRadio2">Perempuan</label>
+							</div>
+						</div>
 					</div>
 					<div class="form-group">
 						<label>No.Identitas</label>
-						<input class="form-control" required></input>
+						<input type="number"  class="form-control" required name="identitas"></input>
 					</div>
 					<div class="form-group">
 						<label>Tipe Kamar</label>
-						<select class="form-control" required></select>
+						<select class="form-control" id="product" required name="product">
+							@foreach($products as $product)
+								<option value="{{$product->id}}">{{$product->name}}</option>
+							@endforeach
+						</select>
 					</div>
 					<div class="form-group">
 						<label>Harga</label>
-						<input type="text" class="form-control" required></input>
+						<input type="text" id="harga" class="form-control" value="500000" readonly required name="harga"></input>
 					</div>		
 					<div class="form-group">
 						<label>Tanggal Pesan</label>
-						<input type="date" class="form-control" required></input>
+						<input type="date" class="form-control" required name="date"></input>
 					</div>			
 					<div class="form-group">
 						<label>Durasi Menginap (Hari)</label>
-						<input type="number" class="form-control" required></input>
-					</div>	
+						<input type="number" min="0" max="30" value="0" class="form-control" id="duration" required name="duration"></input>
+					</div>
+					<input type="text" class="form-control" id="total" required name="total" hidden></input>
 					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-						<label class="form-check-label" for="flexCheckDefault">
+						<input class="form-check-input" type="checkbox" value="true" id="breakfast" name="breakfast">
+						<label class="form-check-label" for="breakfast">
 							Breakfast
 						</label>
 					</div>
-					<div class="totalLabel"><H3>Total:</H3><span><h4>Rp.--</h4></span></div>
+					<div class="totalLabel"><H3>Total:</H3><span><h4 id="harga-total">Rp.--</h4></span></div>
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -434,7 +440,7 @@ $(document).ready(function(){
 							Breakfast
 						</label>
 					</div>
-					<div class="totalLabel"><H3>Total:</H3><span><h4>Rp.--</h4></span></div>
+					<div class="totalLabel"><H3>Total:</H3><span><h4 id="harga-total">Rp.--</h4></span></div>
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -464,7 +470,7 @@ $(document).ready(function(){
 				<tr>
 					<td scope="col">Tipe Kamar:</td>
 				</tr>
-				<tr><img src="col" alt=""></tr>
+				<tr>gambar</tr>
 				<tr>
 					<td scd	ope="col">Harga:</td>
 					<td scope="col">12023890</td>
@@ -508,5 +514,48 @@ $(document).ready(function(){
 		</div>
 	</div>
 </div>
+
+<script>
+	var hargaTotal = 0;
+	$(document).on('ready', function(){
+		$('#breakfast').val();
+	})
+
+	$('#product').on('change', function(){
+		var product = $(this).val();
+		if(product == '1'){
+			$('#harga').val('500000');
+		}else if(product == '2'){
+			$('#harga').val('1000000');
+		}else if(product == '3'){
+			$('#harga').val('1500000');
+		}
+		hitungHarga();
+	});
+
+	$('#duration').on('input',function(e){
+    hitungHarga()
+	});
+
+	$('#breakfast').change(function() {
+		hitungHarga();     
+	});
+
+	function hitungHarga(){
+		var hargaTotal = 0;
+		const harga	= $('#harga').val();
+		const durasi = $('#duration').val();
+		if(durasi > 3){
+			hargaTotal 	= (parseFloat(harga) * parseFloat(durasi)) - (parseFloat(harga) * parseFloat(durasi) * (10/100));
+		}else{
+			hargaTotal 	= parseFloat(harga) * parseFloat(durasi);
+		}
+
+		hargaTotal	= $("#breakfast").is(':checked') ? hargaTotal + 80000 : hargaTotal;
+		$('#harga-total').text('Rp.' + hargaTotal); 
+		$('#total').val(hargaTotal);
+	}
+
+</script>
 </body>
 </html>

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Booking;
 use App\User;
+use App\Product;
 
 class DashboardController extends Controller
 {
@@ -23,6 +25,33 @@ class DashboardController extends Controller
         }
 
         $request->session()->put('user', $user);
+        return redirect()->route('dashboard');
+    }
+
+    public function index(Request $request){
+        $products = Product::all();
+        $bookings = Booking::all();
+
+        return view('dashboard.index', [
+            'products' => $products,
+            'bookings' => $bookings,
+        ]);
+    }
+    public function bookingPost(Request $request){
+        $user = $request->session()->get('user');
+
+        $booking = new Booking;
+        $booking->user_id       = $user->id;
+        $booking->product_id    = $request->product;
+        $booking->name          = $request->name;
+        $booking->gender        = $request->gender;
+        $booking->identitas     = $request->identitas;
+        $booking->date          = $request->date;
+        $booking->duration      = $request->duration;
+        $booking->total         = $request->total;
+        $booking->breakfast     = $request->breakfast ? 1 : 0;
+        $booking->save();
+
         return redirect()->route('dashboard');
     }
 }
