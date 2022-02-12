@@ -22,3 +22,7 @@ Route::get('/login', function () {
 })->name('auth.login');
 
 Route::post('/login-post', 'DashboardController@postLogin')->name('auth.login.post');
+
+Route::get('/dashboard', function () {
+    return view('dashboard.index');
+});
