@@ -38,6 +38,11 @@ class DashboardController extends Controller
         ]);
     }
     public function bookingPost(Request $request){
+
+        if(strlen($request->identitas) != 16){
+            return back()->with('error', 'Jumlah No identitas harus 16');
+        }
+
         $user = $request->session()->get('user');
 
         $booking = new Booking;
