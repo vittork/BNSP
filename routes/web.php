@@ -20,3 +20,5 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('auth.login');
 })->name('auth.login');
+
+Route::post('/login-post', 'DashboardController@postLogin')->name('auth.login.post');
