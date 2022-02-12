@@ -316,9 +316,9 @@ $(document).ready(function(){
 							<td>{{$booking->breakfast ? 'yes' : 'no'}}</td>
 							<td>{{$booking->total}}</td>
 							<td>
-								<a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-								<a href="#deleteEmployeeModal" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
-								<a href="#viewEmployeeModal" class="View" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="View details">&#xe8f4;</i></a>
+								<a href="#editEmployeeModal{{$booking->id}}" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+								<a href="#deleteEmployeeModal{{$booking->id}}" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+								<a href="#viewEmployeeModal{{$booking->id}}" class="View" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="View details">&#xe8f4;</i></a>
 							</td>
 						</tr>
 					@endforeach
@@ -397,123 +397,174 @@ $(document).ready(function(){
 	</div>
 </div>
 <!-- Edit Modal HTML -->
-<div id="editEmployeeModal" class="modal fade">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<form>
-				<div class="modal-header">						
-					<h4 class="modal-title">Pesan Kamar</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				</div>
-				<div class="modal-body">					
-					<div class="form-group">
-						<label>Nama</label>
-						<input type="text" class="form-control" required>
+@foreach($bookings as $booking)
+	@php 
+		$harga = 0;
+		if($booking->product_id ==1){
+			$harga = 500000;
+		}elseif($booking->product_id ==2){
+			$harga = 1000000;
+		}elseif($booking->product_id ==3){
+			$harga = 1500000;
+		}
+	@endphp
+	<div id="editEmployeeModal{{$booking->id}}" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form action="{{route('booking.put', $booking->id)}}" method="post">
+					@csrf
+					<div class="modal-header">
+						<h4 class="modal-title">Edit Kamar</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 					</div>
-					<div class="form-group">
-						<label>Jenis Kelamin</label>
-						<input type="email" class="form-control" required>
+					<div class="modal-body">					
+						<div class="form-group">
+							<label>Nama</label>
+							<input type="text" class="form-control" required name="name" value="{{$booking->name}}">
+						</div>
+						<div class="form-group">
+							<label>Jenis Kelamin</label>
+							<div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="gender" id="inlineRadio1" value="Laki-laki" {{$booking->gender == "Laki-laki" ? 'checked' : ''}}>
+									<label class="form-check-label" for="inlineRadio1">Laki-laki</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="gender" id="inlineRadio2" value="Perempuan" {{$booking->gender == "Perempuan" ? 'checked' : ''}}>
+									<label class="form-check-label" for="inlineRadio2">Perempuan</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label>No.Identitas</label>
+							<input type="number"  class="form-control" required name="identitas" value="{{$booking->identitas}}"></input>
+						</div>
+						<div class="form-group">
+							<label>Tipe Kamar</label>
+							<select class="form-control" id="product" required name="product">
+								@foreach($products as $product)
+									@if($product->id == $booking->product_id)
+										<option value="{{$product->id}}" selected>{{$product->name}}</option>
+									@else
+										<option value="{{$product->id}}">{{$product->name}}</option>
+									@endif
+								@endforeach
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Harga</label>
+							<input type="text" id="harga" class="form-control" value="{{$harga}}" readonly required name="harga"></input>
+						</div>		
+						<div class="form-group">
+							<label>Tanggal Pesan</label>
+							<input type="date" class="form-control" required name="date" value="{{$booking->date}}"></input>
+						</div>			
+						<div class="form-group">
+							<label>Durasi Menginap (Hari)</label>
+							<input type="number" min="0" max="30" class="form-control" id="duration" required name="duration" value="{{$booking->duration}}"></input>
+						</div>
+						<input type="text" class="form-control" id="total" required name="total" hidden value="{{$booking->total}}"></input>
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="true" id="breakfast" name="breakfast" {{$booking->breakfast ? 'checked' : ''}}>
+							<label class="form-check-label" for="breakfast">
+								Breakfast
+							</label>
+						</div>
+						<div class="totalLabel"><H3>Total:</H3><span><h4 id="harga-total">{{$booking->total}}</h4></span></div>
 					</div>
-					<div class="form-group">
-						<label>No.Identitas</label>
-						<input class="form-control" required></input>
+					<div class="modal-footer">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+						<input type="submit" class="btn btn-success" value="Book">
 					</div>
-					<div class="form-group">
-						<label>Tipe Kamar</label>
-						<select class="form-control" required></select>
-					</div>
-					<div class="form-group">
-						<label>Harga</label>
-						<input type="text" class="form-control" required></input>
-					</div>		
-					<div class="form-group">
-						<label>Tanggal Pesan</label>
-						<input type="date" class="form-control" required></input>
-					</div>			
-					<div class="form-group">
-						<label>Durasi Menginap (Hari)</label>
-						<input type="number" class="form-control" required></input>
-					</div>	
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-						<label class="form-check-label" for="flexCheckDefault">
-							Breakfast
-						</label>
-					</div>
-					<div class="totalLabel"><H3>Total:</H3><span><h4 id="harga-total">Rp.--</h4></span></div>
-				</div>
-				<div class="modal-footer">
-					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-					<input type="submit" class="btn btn-success" value="Save">
-				</div>
-			</form>
+				</form>
+			</div>
 		</div>
 	</div>
-</div>
+@endforeach
 <!-- View Modal HTML -->
-<div id="viewEmployeeModal" class="modal fade">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<table class="table table-striped table-hover">
-				<tr>
-					<td scope="col">Nama:</td>
-					<td scope="col">Raihan</td>
-				</tr>
-				<tr>
-					<td scope="col">Jenis Kelamin:</td>
-					<td scope="col">Laki-laki</td>
-				</tr>
-				<tr>
-					<td scope="col">No.Identitas:</td>
-					<td scope="col">12023890</td>
-				</tr>
-				<tr>
-					<td scope="col">Tipe Kamar:</td>
-				</tr>
-				<tr>gambar</tr>
-				<tr>
-					<td scd	ope="col">Harga:</td>
-					<td scope="col">12023890</td>
-				</tr>
-				<tr>
-					<td scd	ope="col">Tanggal Pesan:</td>
-					<td scope="col">12023890</td>
-				</tr>
-				<tr>
-					<td scd	ope="col">Durasi Menginap:</td>
-					<td scope="col">12023890</td>
-				</tr>
-				<tr>
-					<td scd	ope="col">Breakfast:</td>
-					<td scope="col">Yes	</td>
-				</tr>	
-			</table>
+@foreach($bookings as $booking)
+	@php 
+		$product = App\Product::find($booking->product_id);
+		$harga = 0;
+		if($booking->product_id ==1){
+			$type = "Superior Room";
+			$harga = 500000;
+		}elseif($booking->product_id ==2){
+			$type = "Deluxe Room";
+			$harga = 1000000;
+		}elseif($booking->product_id ==3){
+			$type = "Executive Room";
+			$harga = 1500000;
+		}
+	@endphp
+	<div id="viewEmployeeModal{{$booking->id}}" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<table class="table table-striped table-hover">
+					<tr>
+						<td scope="col">Nama:</td>
+						<td scope="col">{{$booking->name}}</td>
+					</tr>
+					<tr>
+						<td scope="col">Jenis Kelamin:</td>
+						<td scope="col">{{$booking->gender}}</td>
+					</tr>
+					<tr>
+						<td scope="col">No.Identitas:</td>
+						<td scope="col">{{$booking->identitas}}</td>
+					</tr>
+					<tr>
+						<td scope="col">Tipe Kamar:</td>
+						<td>{{$type}}</td>
+					</tr>
+					<tr><img src="{{asset('assets/img/portfolio/'.$product->img_type_room)}}" alt="img"></tr>
+					<tr>
+						<td scd	ope="col">Harga:</td>
+						<td scope="col">{{$harga}}</td>
+					</tr>
+					<tr>
+						<td scd	ope="col">Tanggal Pesan:</td>
+						<td scope="col">{{$booking->date}}</td>
+					</tr>
+					<tr>
+						<td scd	ope="col">Durasi Menginap:</td>
+						<td scope="col">{{$booking->duration}}</td>
+					</tr>
+					<tr>
+						<td scd	ope="col">Breakfast:</td>
+						<td scope="col">{{$booking->breakfast ? 'Yes' : 'No'}}	</td>
+					</tr>	
+				</table>
+			</div>
 		</div>
-	</div>
 
-</div>
+	</div>
+@endforeach
 
 <!-- Delete Modal HTML -->
-<div id="deleteEmployeeModal" class="modal fade">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<form>
-				<div class="modal-header">						
-					<h4 class="modal-title">Delete Book</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				</div>
-				<div class="modal-body">					
-					<p>Are you sure you want to delete these Book?</p>
-					<p class="text-warning"><small>This action cannot be undone.</small></p>
-				</div>
-				<div class="modal-footer">
-					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-					<input type="submit" class="btn btn-danger" value="Delete">
-				</div>
-			</form>
+@foreach($bookings as $booking)
+	<div id="deleteEmployeeModal{{$booking->id}}" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form action="{{route('booking.delete', $booking->id)}}">
+					@csrf
+					<div class="modal-header">						
+						<h4 class="modal-title">Delete Book</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					</div>
+					<div class="modal-body">					
+						<p>Are you sure you want to delete these Book?</p>
+						<p class="text-warning"><small>This action cannot be undone.</small></p>
+					</div>
+					<div class="modal-footer">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+						<input type="submit" class="btn btn-danger" value="Delete">
+					</div>
+				</form>
+			</div>
 		</div>
 	</div>
-</div>
+@endforeach
 
 <script>
 	var hargaTotal = 0;

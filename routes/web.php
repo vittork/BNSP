@@ -25,3 +25,5 @@ Route::post('/login-post', 'DashboardController@postLogin')->name('auth.login.po
 
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::post('/booking-post', 'DashboardController@bookingPost')->name('booking.post');
+Route::post('/booking-put/{booking_id}', 'DashboardController@bookingPut')->name('booking.put');
+Route::get('/booking-del/{booking_id}', 'DashboardController@bookingDelete')->name('booking.delete');

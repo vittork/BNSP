@@ -54,4 +54,27 @@ class DashboardController extends Controller
 
         return redirect()->route('dashboard');
     }
+    public function bookingPut(Request $request, $bookingId){
+        $user = $request->session()->get('user');
+        
+        $booking = Booking::find($bookingId);
+        $booking->user_id       = $user->id;
+        $booking->product_id    = $request->product;
+        $booking->name          = $request->name;
+        $booking->gender        = $request->gender;
+        $booking->identitas     = $request->identitas;
+        $booking->date          = $request->date;
+        $booking->duration      = $request->duration;
+        $booking->total         = $request->total;
+        $booking->breakfast     = $request->breakfast ? 1 : 0;
+        $booking->save();
+
+        return redirect()->route('dashboard');
+    }
+    public function bookingDelete(Request $request, $bookingId){
+        $booking = Booking::find($bookingId);
+        $booking->delete();
+
+        return redirect()->route('dashboard');
+    }
 }
