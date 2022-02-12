@@ -25,4 +25,4 @@ Route::post('/login-post', 'DashboardController@postLogin')->name('auth.login.po
 
 Route::get('/dashboard', function () {
     return view('dashboard.index');
-});
+})->name('dashboard');

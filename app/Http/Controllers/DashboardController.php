@@ -23,7 +23,6 @@ class DashboardController extends Controller
         }
 
         $request->session()->put('user', $user);
-        return 'oke';
-        // return redirect()->route('dashboard');
+        return redirect()->route('dashboard');
     }
 }
